@@ -12,22 +12,15 @@ namespace Wask.Lib.Model
         }
     }
 
-    public class Profile
+    public class Session
     {
         public string name { get; set; }
-        public string path { get; set; }
     }
 
-    public class Restart
+    public class Transaction
     {
-        public int restartTier { get; set; }
-        public bool supportsPause { get; set; }
-        public bool daily { get; set; }
-        public string timeout { get; set; }
-    }
-
-    public class FixMessage
-    {
+        public string id { get; set; }
+        public string direction { get; set; }
         public string clOrdId { get; set; }
         public string symbol { get; set; }
         public int fillStatus { get; set; }

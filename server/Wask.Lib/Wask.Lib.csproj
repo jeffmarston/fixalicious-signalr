@@ -154,26 +154,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BranchProfile\ProfileController.cs" />
-    <Compile Include="BranchProfile\ProfileDal.cs" />
-    <Compile Include="ServiceStatus\Model.cs" />
-    <Compile Include="ServiceStatus\ServiceUtils.cs" />
-    <Compile Include="ServiceStatus\ServiceWatcher.cs" />
+    <Compile Include="Session\SessionController.cs" />
+    <Compile Include="Session\SessionDal.cs" />
+    <Compile Include="Transaction\Model.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignalR\Constants.cs" />
     <Compile Include="SignalR\EventHub.cs" />
-    <Compile Include="ServiceStatus\ServiceStatusController.cs" />
+    <Compile Include="Transaction\TransactionController.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="BranchProfile\profiles.json">
+    <None Include="Session\sessions.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -8,26 +8,21 @@ using Swashbuckle.Application;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http.Formatting;
 using System.Reflection;
-using System.ServiceProcess;
 using System.Web.Http;
 using Wask.Lib.Model;
-using Wask.Lib.Utils;
 
 namespace Wask.Lib
 {
     public class Startup
     {
         private string _staticFilePath;
-        private List<FixMessage> _services = new List<FixMessage>();
-
+        private List<Transaction> _services = new List<Transaction>();
 
         public Startup(string options)
         {
             _staticFilePath = options;
-            ServiceWatcher.Init(ServiceUtils.GetAllEzeServices());
         }
 
         public void Configuration(IAppBuilder app)
