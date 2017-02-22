@@ -1,12 +1,19 @@
 
-export interface IServiceInfo {
-    name: string,
-    status?: string,
-    exe?: string,
-    pid?: string
+export interface IFixMessage {
+    direction: string,
+
+    clOrdId: string,
+    symbol?: string,
+    fillStatus?: number,
+    lastShares?: number,
+    cumQty?: number,
+    lastPx?: number,
+    avgPx?: number,
+    leavesQty?: number,
+    side?: number
 }
 
-export interface IProfile {
+export interface ISession {
     name: string;
-    path: string;
+    selected?: boolean;
 }

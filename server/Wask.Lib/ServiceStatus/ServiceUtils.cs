@@ -77,10 +77,10 @@ namespace Wask.Lib.Utils
             return p + s;
         }
 
-        public static List<Service> GetAllEzeServices()
+        public static List<FixMessage> GetAllEzeServices()
         {
             var dirs = ProfileDal.Profiles.Select(o => o.path).ToArray();
-            var services = new List<Service>();
+            var services = new List<FixMessage>();
 
             foreach (var dir in dirs)
             {
@@ -96,7 +96,7 @@ namespace Wask.Lib.Utils
                             && filename.EndsWith(".svc.exe", StringComparison.CurrentCultureIgnoreCase))
                         {
                             var svcName = GenerateServiceName(GetServicePrefix(dir), filename);
-                            services.Add(new Service() { path = path, name = svcName });
+                            //services.Add(new FixMessage() { path = path, name = svcName });
                         }
                     }
                 }

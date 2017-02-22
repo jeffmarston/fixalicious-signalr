@@ -10,14 +10,14 @@ namespace Wask.Lib.Model
 {
     public class ServiceWatcher
     {
-        private List<Service> _knownStates = new List<Service>();
-        private List<Service> _servicesToMonitor;
+        private List<FixMessage> _knownStates = new List<FixMessage>();
+        private List<FixMessage> _servicesToMonitor;
         private Timer _pollingTimer;
         private IHubContext _context;
         private string _channel = Constants.ServiceInfoChannel;
         
 
-        internal static void Init(List<Service> services)
+        internal static void Init(List<FixMessage> services)
         {
             _instance = new ServiceWatcher(services);
         }
@@ -28,33 +28,33 @@ namespace Wask.Lib.Model
             get { return _instance; }
         }
 
-        private ServiceWatcher(List<Service> servicesToMonitor)
+        private ServiceWatcher(List<FixMessage> servicesToMonitor)
         {
-            _servicesToMonitor = servicesToMonitor;
-            foreach (var svc in _servicesToMonitor)
-            {
-                svc.status = ServiceUtils.GetServiceStatus(svc.name);
-                _knownStates.Add(svc);
-            }
-            _context = GlobalHost.ConnectionManager.GetHubContext<EventHub>();
-            _pollingTimer = new Timer(DoPoll, null, 0, 3000);
+            //_servicesToMonitor = servicesToMonitor;
+            //foreach (var svc in _servicesToMonitor)
+            //{
+            //    svc.status = ServiceUtils.GetServiceStatus(svc.name);
+            //    _knownStates.Add(svc);
+            //}
+            //_context = GlobalHost.ConnectionManager.GetHubContext<EventHub>();
+            //_pollingTimer = new Timer(DoPoll, null, 0, 3000);
         }
 
         private void DoPoll(object state)
         {
             foreach (var svc in _servicesToMonitor)
             {
-                var newStatus = ServiceUtils.GetServiceStatus(svc.name);
-                var prevState = _knownStates.Find(o => o.name == svc.name);
-                if (prevState != null && prevState.status != newStatus)
-                {
-                    Console.WriteLine($"Publish: [{svc.name}] is now {newStatus}.");
-                    prevState.status = newStatus;                    
-                    PublishServiceChange("serviceInfo.status", new List<Service>() { svc });
-                }
+                //var newStatus = ServiceUtils.GetServiceStatus(svc.name);
+                //var prevState = _knownStates.Find(o => o.name == svc.name);
+                //if (prevState != null && prevState.status != newStatus)
+                //{
+                //    Console.WriteLine($"Publish: [{svc.name}] is now {newStatus}.");
+                //    prevState.status = newStatus;                    
+                //    PublishServiceChange("serviceInfo.status", new List<FixMessage>() { svc });
+                //}
             }
         }
-        private void PublishServiceChange(string eventName, List<Service> deltas)
+        private void PublishServiceChange(string eventName, List<FixMessage> deltas)
         {
             _context.Clients.Group(_channel).OnEvent(Constants.ServiceInfoChannel, new ChannelEvent
             {
@@ -64,7 +64,7 @@ namespace Wask.Lib.Model
             });
         }
 
-        public List<Service> GetServices()
+        public List<FixMessage> GetServices()
         {
             return _knownStates;
         }

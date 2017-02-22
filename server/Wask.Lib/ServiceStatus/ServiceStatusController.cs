@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using Wask.Lib.Model;
 using Wask.Lib.Utils;
 using System.ServiceProcess;
+using ServiceStack.Redis;
+using Newtonsoft.Json;
 
 namespace Wask.Lib.SignalR
 {
@@ -18,11 +20,11 @@ namespace Wask.Lib.SignalR
     [RoutePrefix(Constants.ServiceInfoChannel)]
     public class ServiceStatusController : ApiController
     {
-        private ServiceWatcher _serviceWatcher;
+        //private ServiceWatcher _serviceWatcher;
 
         public ServiceStatusController()
         {
-            _serviceWatcher = ServiceWatcher.Instance;
+            //_serviceWatcher = ServiceWatcher.Instance;
         }
         
         /// <summary>
@@ -41,18 +43,25 @@ namespace Wask.Lib.SignalR
         /// <response code="400">If the item is null</response>
         [Route("service")]
         [HttpGet]
-        public IEnumerable<Service> GetServices()
+        public IEnumerable<FixMessage> GetServices()
         {
-            List<Service> services = _serviceWatcher.GetServices();
-            return services;
+            //List<FixMessage> services = _serviceWatcher.GetServices();
+            return null; // services;
         }
 
         [Route("service/{profile}")]
         [HttpGet]
-        public IEnumerable<Service> GetServices(string profile)
+        public IEnumerable<FixMessage> GetServices(string profile)
         {
-            List<Service> services = _serviceWatcher.GetServices();
-            return services.Where(o=> o.path.Contains(profile) );
+            string redisDoc;
+            using (var redis = new RedisClient("localhost", 6379))
+            {
+                redisDoc = redis.GetValue(profile);
+            }
+
+            List<FixMessage> messages = JsonConvert.DeserializeObject<List<FixMessage>>(redisDoc);
+
+            return messages;
         }
         
         /// <summary>
@@ -74,47 +83,19 @@ namespace Wask.Lib.SignalR
         public IHttpActionResult PostService(string name, string action)
         {
             var returnMsg = "";
-            try
-            {
-                List<Service> services = _serviceWatcher.GetServices();
-                var svc = services.Find(o => string.Compare(o.name, name, true) == 0);
-                if (svc == null)
-                {
-                    return BadRequest("Service not found: " + name);
-                }
 
-                if (svc != null && action != null)
-                {
-                    if (action.ToLower() == "start")
-                    {
-                        ServiceUtils.StartService(svc.name);
-                        returnMsg = "Starting Service: " + svc.name;
-                    }
-                    else if (action.ToLower() == "stop")
-                    {
-                        ServiceUtils.StopService(svc.name);
-                        returnMsg = "Stoping Service: " + svc.name;
-                    }
-                    else if (action.ToLower() == "install")
-                    {
-                        ServiceUtils.InstallAndStart(svc.name, svc.name, svc.path);
-                        returnMsg = "Installing Service: " + svc.name;
-                    }
-                    else
-                    {
-                        return BadRequest("Unsupported Action: " + action);
-                    }
-                }
-            }
-            catch (InvalidOperationException e)
+            List<FixMessage> messages = new List<FixMessage>() {
+                new FixMessage() { symbol="GOOG", clOrdId="abc", lastShares=100, lastPx=12.3m },
+                new FixMessage() { symbol="MSFT", clOrdId="def", lastShares=2200, lastPx=22.3m },
+                new FixMessage() { symbol="AAPL", clOrdId="ghi", lastShares=4500, lastPx=132.1m }
+            };
+            string json = JsonConvert.SerializeObject(messages);
+
+            using (var redis = new RedisClient("localhost", 6379))
             {
-                if (e.InnerException.Message == "Access is denied")
-                {
-                    Debug.WriteLine("Access denied");
-                    throw new HttpResponseException(
-                        Request.CreateErrorResponse(HttpStatusCode.Unauthorized, e.InnerException.Message));
-                }
+                redis.SetValue(name, json);
             }
+            
             Console.WriteLine(returnMsg);
             return Ok(returnMsg);
         }

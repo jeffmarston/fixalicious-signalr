@@ -3,19 +3,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 
-import { AgGridModule } from 'ag-grid-ng2/main';
+import { AgGridModule } from 'ag-grid-angular/main';
 
 import { AppComponent } from "./app.component";
-import { SimpleGridComponent } from "./components/simple-grid.component";
-import { ClientNavComponent } from "./components/client-nav/client-nav.component";
+import { SimpleGridComponent } from "./components/message-grid/message-grid.component";
+import { ClientNavComponent } from "./components/session-nav/session-nav.component";
+import { DetailPane } from "./components/detail-pane/detail-pane.component";
 import { ProfileConfigComponent } from "./components/profile-config/profile-config.component";
-import { ChannelService, ChannelConfig, SignalrWindow } from "./services/channel.service";
-import { ClientInfoService} from "./services/clients.service";
-
-
-let channelConfig = new ChannelConfig();
-channelConfig.url = "/signalr";
-channelConfig.hubName = "EventHub";
+import { ClientInfoService } from "./services/clients.service";
 
 @NgModule({
     imports: [
@@ -28,13 +23,11 @@ channelConfig.hubName = "EventHub";
         AppComponent,
         SimpleGridComponent,
         ClientNavComponent,
+        DetailPane,
         ProfileConfigComponent
     ],
     providers: [ 
-        ChannelService,
-        ClientInfoService,
-        { provide: SignalrWindow, useValue: window },
-        { provide: "channel.config", useValue: channelConfig }
+        ClientInfoService
     ],
     bootstrap: [AppComponent]
 })

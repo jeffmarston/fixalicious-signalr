@@ -26,20 +26,21 @@ namespace Wask.Lib.Model
         public string timeout { get; set; }
     }
 
-    public class Service
+    public class FixMessage
     {
-        public string path { get; set; }
-        public string status { get; set; }
-        public string name { get; set; }
-        public string instance { get; set; }
-        public bool enabled { get; set; }
-        public string exe { get; set; }
-        public int pid { get; set; }
-        public Restart restart { get; set; }
+        public string clOrdId { get; set; }
+        public string symbol { get; set; }
+        public int fillStatus { get; set; }
+        public int lastShares { get; set; }
+        public int cumQty { get; set; }
+        public decimal lastPx { get; set; }
+        public decimal avgPx { get; set; }
+        public int leavesQty { get; set; }
+        public int side { get; set; }
 
         public override string ToString()
         {
-            return $"{name} - {status}";
+            return $"{symbol} - {clOrdId}";
         }
     }
 

@@ -21,7 +21,7 @@ namespace Wask.Lib
     public class Startup
     {
         private string _staticFilePath;
-        private List<Service> _services = new List<Service>();
+        private List<FixMessage> _services = new List<FixMessage>();
 
 
         public Startup(string options)

@@ -13,8 +13,12 @@ export class ServiceInfoService {
         Observable;//.create();
     }
 
-    public getServices(profile: string): Observable<any> {
-        return this.http.get(this.baseurl + "/" + profile)
+    public getServices(channel: string): Observable<any> {
+        // return Observable.from([
+        //     { name: "jeff" }
+        // ]);
+
+        return this.http.get(this.baseurl + "/" + channel)
             .map(res => res.json());
     }
 

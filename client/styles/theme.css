@@ -9,11 +9,28 @@ body {
   height: 100%;
   padding: 0;
   margin: 0;
-  font-family: sans-serif;
+}
+
+*{
+  font-family: 'Nunito', sans-serif;
 }
 
 select:focus {
   outline:none;
+}
+
+h1 {
+  font-family: 'Quicksand', sans-serif;
+  margin: 0;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.header-bar {
+  height: 24px; 
+  background: #234; 
+  padding: 12px;
+  color: white;
 }
 
 .service-status {
@@ -169,15 +186,15 @@ select:focus {
   border: 1px solid #808080;
 }
 .ag-theme .ag-header {
-  color: #000;
+  color: #555;
   background: #eee;
   border-bottom: 1px solid #808080;
   font-weight: normal;
 }
 .ag-theme .ag-header-icon {
-  color: #000;
+  color: #555;
   stroke: none;
-  fill: #000;
+  fill: #555;
 }
 .ag-theme .ag-no-scrolls .ag-header-container {
   background: -webkit-linear-gradient(#fff, #d3d3d3);
@@ -232,7 +249,7 @@ select:focus {
   border-left: 1px solid #808080;
 }
 .ag-theme .ag-header-cell-menu-button:hover {
-  border: 1px solid #808080;
+  xborder: 1px solid #808080;
 }
 .ag-theme .ag-body {
   background-color: #f6f6f6;

@@ -1,7 +1,7 @@
 import { Component, OnInit, EventEmitter, Input, Output, SimpleChange } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { Http, Response } from "@angular/http";
-import { IProfile } from "../../types.d"
+import { ISession } from "../../types.d"
 
 @Component({
     selector: 'profile-config',
@@ -9,17 +9,18 @@ import { IProfile } from "../../types.d"
     styleUrls: ["app/components/profile-config/profile-config.component.css"]
 })
 export class ProfileConfigComponent {
-    @Output() onSave = new EventEmitter<IProfile>();
-    @Input() profile: IProfile;
+    @Output() onSave = new EventEmitter<ISession>();
+    @Input() profile: ISession;
 
     private debugMessage: string;
     private hideForm: boolean = true;
 
     constructor() {
+        this.profile = {name:""};
     }
 
-    private onClicky(profile) {
-        this.onSave.emit(profile);
+    private onClick() {
+        this.onSave.emit(this.profile);
     }
 
     private toggleCollapsed() {
@@ -32,6 +33,7 @@ export class ProfileConfigComponent {
 
             if (propName == "profile" && changedProp.currentValue != undefined) {
                 this.profile = changedProp.currentValue;
+                
             }
         }
     }
