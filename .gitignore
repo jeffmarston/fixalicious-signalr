@@ -1,0 +1,9 @@
+
+bin/
+
+client/node_modules/
+client/lib/
+
+server/packages/
+server/.vs
+server/**/obj/**

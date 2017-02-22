@@ -1,0 +1,14 @@
+﻿[
+  {
+    "name": "Mainline",
+    "path": "D:\\TFS\\Oms\\Mainline"
+  },
+  {
+    "name": "CopyLocalDev",
+    "path": "D:\\TFS\\CopyLocalDev"
+  },
+  {
+    "name": "SR10P11",
+    "path": "D:\\TFS\\Oms\\Releases\\5.7SR10P11"
+  }
+]
