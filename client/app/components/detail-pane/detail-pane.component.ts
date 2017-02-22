@@ -10,7 +10,7 @@ import { ISession, IFixMessage } from "../../types.d"
     template: `
     <div class="container" [style.width]="collapsed ? '0' : '220px'" > 
         <button [disabled]="!isValid" (click)="ackFixMessage()">Ack</button>
-        <button [disabled]="!isValid">Reject</button>
+        <button [disabled]="!isValid" (click)="rejectFixMessage()">Reject</button>
         <button [disabled]="!isValid">Fill</button>
         <button [disabled]="!isValid">Partial Fill</button>
     </div>
@@ -67,6 +67,10 @@ export class DetailPane implements OnInit {
 
     private ackFixMessage() {
         this.apiDataService.sendCommand("BAX", "");
+    }
+
+    private rejectFixMessage() {
+        this.apiDataService.sendCommand("BAX2", "");
     }
 
     ngOnInit() {

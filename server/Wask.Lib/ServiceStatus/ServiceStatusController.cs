@@ -58,9 +58,12 @@ namespace Wask.Lib.SignalR
             {
                 redisDoc = redis.GetValue(profile);
             }
+            if (redisDoc == null)
+            {
+                return null;
+            }
 
             List<FixMessage> messages = JsonConvert.DeserializeObject<List<FixMessage>>(redisDoc);
-
             return messages;
         }
         
@@ -85,7 +88,7 @@ namespace Wask.Lib.SignalR
             var returnMsg = "";
 
             List<FixMessage> messages = new List<FixMessage>() {
-                new FixMessage() { symbol="GOOG", clOrdId="abc", lastShares=100, lastPx=12.3m },
+                new FixMessage() { symbol=name, clOrdId="abc", lastShares=100, lastPx=12.3m },
                 new FixMessage() { symbol="MSFT", clOrdId="def", lastShares=2200, lastPx=22.3m },
                 new FixMessage() { symbol="AAPL", clOrdId="ghi", lastShares=4500, lastPx=132.1m }
             };
