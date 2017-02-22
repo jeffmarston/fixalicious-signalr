@@ -1,8 +1,8 @@
 import { Component, OnInit, EventEmitter, Input, Output, SimpleChange } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { Http, Response } from "@angular/http";
-import { ClientInfoService } from "../../services/clients.service"
-import { ServiceInfoService } from "../../services/serviceinfo.service"
+import { SessionService } from "../../services/session.service"
+import { TransactionApiService } from "../../services/transaction.service"
 import { ISession, IFixMessage } from "../../types.d"
 
 @Component({
@@ -27,7 +27,7 @@ import { ISession, IFixMessage } from "../../types.d"
 
         button { 
             padding: 4px;
-            margin: 6px;    
+            margin: 0 6px 6px 6px;    
         }
 
         li:hover:not(.active) {
@@ -35,7 +35,7 @@ import { ISession, IFixMessage } from "../../types.d"
         }
 
     `],
-    providers: [ClientInfoService]
+    providers: [SessionService]
 })
 export class DetailPane implements OnInit {
     @Input() detail: IFixMessage;
@@ -46,8 +46,8 @@ export class DetailPane implements OnInit {
     private isValid: boolean;
 
     constructor(
-        private clientsService: ClientInfoService,
-        private apiDataService: ServiceInfoService) {
+        private clientsService: SessionService,
+        private apiDataService: TransactionApiService) {
     }    
 
     private ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -66,11 +66,11 @@ export class DetailPane implements OnInit {
     }
 
     private ackFixMessage() {
-        this.apiDataService.sendCommand("BAX", "");
+        this.apiDataService.createTransaction("BAX", "AAPL");
     }
 
     private rejectFixMessage() {
-        this.apiDataService.sendCommand("BAX2", "");
+        this.apiDataService.createTransaction("BAX2", "GOOG");
     }
 
     ngOnInit() {

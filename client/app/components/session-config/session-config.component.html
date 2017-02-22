@@ -8,9 +8,9 @@
             <i class="fa fa-cog" aria-hidden="true"></i>
         </button>
         
-        <input [(value)]="profile.name" class="branch-name"/>
+        <input [(value)]="session.name" class="branch-name"/>
     </div>        
-    <form name="profileConfigForm" [ngClass]="{'collapsed-form': hideForm }">
+    <form name="sessionConfigForm" [ngClass]="{'collapsed-form': hideForm }">
         <table>
             <tr>
                 <td colspan=4 class="header-cell">
@@ -23,8 +23,7 @@
                 </td>
                 <td colspan=3>
                     <input style="width: 100%; box-sizing: border-box;" 
-                        name="branchRootPath"
-                        [(ngModel)]="profile.path"/>
+                        name="branchRootPath"/>
                 </td>
             </tr>
             <tr>

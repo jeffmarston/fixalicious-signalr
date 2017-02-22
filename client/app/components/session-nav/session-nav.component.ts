@@ -1,7 +1,7 @@
 import { Component, OnInit, EventEmitter, Input, Output, SimpleChange } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { Http, Response } from "@angular/http";
-import { ClientInfoService } from "../../services/clients.service"
+import { SessionService } from "../../services/session.service"
 import { ISession } from "../../types.d"
 
 @Component({
@@ -10,31 +10,31 @@ import { ISession } from "../../types.d"
     <div class="container" [style.width]="isCollapsed ? '0' : '150px'" >   
         <div class="nav-top-spacer"></div>
         <ul>     
-            <li *ngFor="let profile of profiles"
-                    (click)="onClick(profile)"
-                    (dblclick)="enterEdit(profile)"
+            <li *ngFor="let session of sessions"
+                    (click)="onClick(session)"
+                    (dblclick)="enterEdit(session)"
                     class="navbar-item"
-                    [class.active]="profile.selected">
+                    [class.active]="session.selected">
                     
                     <input 
-                        (blur)="doneEditingProfile(profile)"
-                        [readonly]="!profile.isEditing"
-                        [(value)]="profile.name"
-                        [ngClass]="profile.isEditing ? 'editable-input' : 'readonly-input' "/>
+                        (blur)="doneEditingSession(session)"
+                        [readonly]="!session.isEditing"
+                        [(value)]="session.name"
+                        [ngClass]="session.isEditing ? 'editable-input' : 'readonly-input' "/>
 
-                    </li>
+            </li>
             <li>
-                <span class="add-profile-button navbar-item" 
-                    (click)="addProfile($event, newProfileInput)"
-                    *ngIf="!isAddingProfile" 
-                    title="Add new profile">+</span>
+                <span class="add-session-button navbar-item" 
+                    (click)="addSession($event, newSessionInput)"
+                    *ngIf="!isAddingSession" 
+                    title="Add new session">+</span>
                 <input 
-                    #newProfileInput
-                    name="newProfileInput"
+                    #newSessionInput
+                    name="newSessionInput"
                     class="editable-input hidden"
-                    [ngClass]="{'visible': isAddingProfile }"
-                    [(ngModel)]="newProfileName" 
-                    (blur)="doneEditingProfile()"/>
+                    [ngClass]="{'visible': isAddingSession }"
+                    [(ngModel)]="newSessionName" 
+                    (blur)="doneEditingSession()"/>
 
             </li>
         </ul>
@@ -85,7 +85,7 @@ import { ISession } from "../../types.d"
             cursor: pointer;
         }
 
-        .add-profile-button {
+        .add-session-button {
             display: none;
             border-radius: 15px;
             margin-left: 10px;
@@ -98,7 +98,7 @@ import { ISession } from "../../types.d"
             font-size: 24px;
         }
 
-        .add-profile-button:hover {
+        .add-session-button:hover {
             color: white;
             background: #36424B;
         }
@@ -128,21 +128,21 @@ import { ISession } from "../../types.d"
         }
 
     `],
-    providers: [ClientInfoService]
+    providers: [SessionService]
 })
-export class ClientNavComponent implements OnInit {
+export class SessionNavComponent implements OnInit {
     @Output() onSelected = new EventEmitter<ISession>();
     @Input() collapsed: boolean;
 
     private debugMessage: string;
-    private selectedProfile: ISession;
-    private profiles: ISession[];
+    private selectedSession: ISession;
+    private sessions: ISession[];
     private isCollapsed: boolean;
-    private isAddingProfile: boolean;
-    private newProfileName: string;
+    private isAddingSession: boolean;
+    private newSessionName: string;
 
     constructor(
-        private clientsService: ClientInfoService) {
+        private sessionService: SessionService) {
     }    
 
     private ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -155,45 +155,51 @@ export class ClientNavComponent implements OnInit {
         }
     }
 
-    processKeyUp(e, el) {
-        if(e.keyCode == 65) { // press A
-        el.focus();
-        }
-    }
-
     ngOnInit() {
-        this.profiles = [ {name: "BAX"}, {name:"BAX2"} ];
+        this.sessions = [];
+        this.sessionService.getSessions();
+        var src = this.sessionService.getSessions();
+        src.subscribe(data => {
+            this.sessions = data;
+            if (data.length > 0) {
+                this.selectedSession = data[0];
+                this.onClick(this.selectedSession);
+            }
+        }, error => {
+            console.error("ERROR: " + error);
+        });
     }
 
-    private enterEdit(profile) {
-        profile.isEditing = true;
+    private enterEdit(session) {
+        session.isEditing = true;
     }
 
-    private doneEditingProfile(profile) {
-        if (this.newProfileName ) {
-            let newProfile = {name: this.newProfileName, path: ""};
-            this.profiles.push(newProfile);
-            this.isAddingProfile = false;
-            this.newProfileName="";
-            this.onClick(newProfile);
+    private doneEditingSession(session) {
+        if (this.newSessionName ) {
+            let newSession = {name: this.newSessionName, path: ""};
+            this.sessions.push(newSession);
+            this.isAddingSession = false;
+            this.newSessionName="";
+            this.onClick(newSession);
         }
-        this.isAddingProfile = false;        
-        if (profile) {
-            profile.isEditing = false;
+        this.isAddingSession = false;        
+        if (session) {
+            session.isEditing = false;
         }
     }
 
-    private addProfile(e, newProfileInput) {
-        this.isAddingProfile = true;
-        newProfileInput.focus();
+    private addSession(e, newSessionInput) {
+        this.isAddingSession = true;
+        newSessionInput.focus();
     }
-    private onClick(profile) {
-        this.debugMessage = profile.name;
-        if (this.selectedProfile) {
-            this.selectedProfile.selected = false;
+
+    private onClick(session) {
+        this.debugMessage = session.name;
+        if (this.selectedSession) {
+            this.selectedSession.selected = false;
         }
-        this.selectedProfile = profile;
-        this.selectedProfile.selected = true;
-        this.onSelected.emit(profile);
+        this.selectedSession = session;
+        this.selectedSession.selected = true;
+        this.onSelected.emit(session);
     }
 }

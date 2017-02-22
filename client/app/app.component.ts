@@ -18,7 +18,7 @@ import { Observable } from "rxjs/Observable";
             </div>
             <message-grid 
                 style="flex: 1 1 auto; height: 100%;"
-                [profile]="profile"
+                [session]="session"
                 ></message-grid>
         </div>
     </div>
@@ -46,7 +46,7 @@ import { Observable } from "rxjs/Observable";
 })
 export class AppComponent {
     private connectionState$: Observable<string>;
-    private profile: string = "BAX";
+    private session: string = "BAX";
     private isNavCollapsed: boolean;
 
     toggleNavBar(){
@@ -54,6 +54,6 @@ export class AppComponent {
     }
 
     onSelected($event) {
-        this.profile = $event;        
+        this.session = $event;        
     }
 }

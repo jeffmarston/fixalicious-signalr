@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, Response } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
-import { ISession } from "../types"
 
 @Injectable()
-export class ClientInfoService {
-    private baseurl = "/serviceInfo/profile";
+export class TransactionApiService {
+    private baseurl = "/transaction";
 
     constructor(private http: Http) {
     }
@@ -14,13 +13,13 @@ export class ClientInfoService {
         Observable;//.create();
     }
 
-    public getClients(): Observable<any> {
-        return this.http.get(this.baseurl)
+    public getTransactions(channel: string): Observable<any> {
+        return this.http.get(this.baseurl + "/" + channel)
             .map(res => res.json());
     }
 
-    public createProfile(profile: ISession) {
-        let url = `${this.baseurl}/${profile.name}`;
+    public createTransaction(svcId: string, symbol: string) {
+        let url = `${this.baseurl}/${svcId}?symbol=${symbol}`;
         this.http.post(url, "")
             .subscribe(o => { });
     }

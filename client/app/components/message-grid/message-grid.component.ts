@@ -2,8 +2,8 @@ import { Component, OnInit, Input, OnChanges, SimpleChange } from '@angular/core
 import { CommonModule } from "@angular/common";
 import { Http, Response } from "@angular/http";
 import { GridOptions } from 'ag-grid/main';
-import { ServiceInfoService } from "../../services/serviceinfo.service"
-import { ClientInfoService } from "../../services/clients.service"
+import { TransactionApiService } from "../../services/transaction.service"
+import { SessionService } from "../../services/session.service"
 import { IFixMessage, ISession } from "../../types.d"
 
 
@@ -11,16 +11,16 @@ import { IFixMessage, ISession } from "../../types.d"
     selector: 'message-grid',
     templateUrl: 'app/components/message-grid/message-grid.component.html',
     styleUrls: ['app/components/message-grid/message-grid.component.css'],
-    providers: [ServiceInfoService]
+    providers: [TransactionApiService]
 })
 export class SimpleGridComponent implements OnInit {
-    @Input() profile: ISession;
+    @Input() session: ISession;
 
     private gridOptions: GridOptions;
     private showGrid: boolean;
     private rowData: IFixMessage[];
     private columnDefs: any[];
-    private selectedProfile: ISession;
+    private selectedSession: ISession;
     private selectedMessage: IFixMessage;
     private showDetails: boolean;
 
@@ -31,8 +31,8 @@ export class SimpleGridComponent implements OnInit {
     }
 
     constructor(
-        private apiDataService: ServiceInfoService,
-        private profileService: ClientInfoService,
+        private apiDataService: TransactionApiService,
+        private sessionService: SessionService,
         private http: Http) {
 
         this.createColumnDefs();
@@ -47,18 +47,18 @@ export class SimpleGridComponent implements OnInit {
         for (let propName in changes) {
             let changedProp = changes[propName];
 
-            if (propName == "profile") {
-                this.selectedProfile = changedProp.currentValue;
+            if (propName == "session") {
+                this.selectedSession = changedProp.currentValue;
                 this.rowData = null;
                 this.createRowData(changedProp.currentValue);
             }
         }
     }
 
-    private saveProfile(profile: ISession) {  
-        this.profileService.createProfile(profile);
+    private saveSession(session: ISession) {  
+        this.sessionService.createSession(session);
         this.rowData = null;
-        this.createRowData(profile);
+        this.createRowData(session);
     }
 
     private createColumnDefs() {
@@ -71,7 +71,7 @@ export class SimpleGridComponent implements OnInit {
         ];
     }
 
-    private createRowData(profile: ISession) {
+    private createRowData(session: ISession) {
 
         // setTimeout( o=> {
         //     this.updateDataSource([ 
@@ -99,7 +99,7 @@ export class SimpleGridComponent implements OnInit {
         //     ]);
         // }, 1000);
         
-        var src = this.apiDataService.getServices(profile.name);
+        var src = this.apiDataService.getTransactions(session.name);
         src.subscribe(o => {
             this.updateDataSource(o);
         }, error => {

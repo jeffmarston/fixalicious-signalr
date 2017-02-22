@@ -4,23 +4,23 @@ import { Http, Response } from "@angular/http";
 import { ISession } from "../../types.d"
 
 @Component({
-    selector: 'profile-config',
-    templateUrl: "app/components/profile-config/profile-config.component.html",
-    styleUrls: ["app/components/profile-config/profile-config.component.css"]
+    selector: 'session-config',
+    templateUrl: "app/components/session-config/session-config.component.html",
+    styleUrls: ["app/components/session-config/session-config.component.css"]
 })
-export class ProfileConfigComponent {
+export class SessionConfigComponent {
     @Output() onSave = new EventEmitter<ISession>();
-    @Input() profile: ISession;
+    @Input() session: ISession;
 
     private debugMessage: string;
     private hideForm: boolean = true;
 
     constructor() {
-        this.profile = {name:""};
+        this.session = {name:""};
     }
 
     private onClick() {
-        this.onSave.emit(this.profile);
+        this.onSave.emit(this.session);
     }
 
     private toggleCollapsed() {
@@ -31,8 +31,8 @@ export class ProfileConfigComponent {
         for (let propName in changes) {
             let changedProp = changes[propName];
 
-            if (propName == "profile" && changedProp.currentValue != undefined) {
-                this.profile = changedProp.currentValue;
+            if (propName == "session" && changedProp.currentValue != undefined) {
+                this.session = changedProp.currentValue;
                 
             }
         }

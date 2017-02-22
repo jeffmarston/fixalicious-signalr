@@ -1,8 +1,8 @@
 <div class="outer-div">
     <div class="main-content">
-        <profile-config 
-            [profile]="selectedProfile"
-            (onSave)="saveProfile($event)"></profile-config>
+        <session-config 
+            [session]="selectedSession"
+            (onSave)="saveSession($event)"></session-config>
 
         <div *ngIf="showGrid" style="height: 100%; display: flex;">
             <ag-grid-angular #agGrid style="width: 100%; height: 100%;" class="ag-theme"

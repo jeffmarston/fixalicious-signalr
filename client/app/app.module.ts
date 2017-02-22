@@ -7,10 +7,10 @@ import { AgGridModule } from 'ag-grid-angular/main';
 
 import { AppComponent } from "./app.component";
 import { SimpleGridComponent } from "./components/message-grid/message-grid.component";
-import { ClientNavComponent } from "./components/session-nav/session-nav.component";
+import { SessionNavComponent } from "./components/session-nav/session-nav.component";
 import { DetailPane } from "./components/detail-pane/detail-pane.component";
-import { ProfileConfigComponent } from "./components/profile-config/profile-config.component";
-import { ClientInfoService } from "./services/clients.service";
+import { SessionConfigComponent } from "./components/session-config/session-config.component";
+import { SessionService } from "./services/session.service";
 
 @NgModule({
     imports: [
@@ -22,12 +22,12 @@ import { ClientInfoService } from "./services/clients.service";
     declarations: [
         AppComponent,
         SimpleGridComponent,
-        ClientNavComponent,
+        SessionNavComponent,
         DetailPane,
-        ProfileConfigComponent
+        SessionConfigComponent
     ],
     providers: [ 
-        ClientInfoService
+        SessionService
     ],
     bootstrap: [AppComponent]
 })
