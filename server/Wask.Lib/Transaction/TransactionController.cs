@@ -39,6 +39,7 @@ namespace Wask.Lib.SignalR
             return messages;
         }
 
+
         /// <summary>
         /// Send a new transaction
         /// </summary>

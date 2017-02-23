@@ -23,6 +23,8 @@ namespace Wask.Lib
         public Startup(string options)
         {
             _staticFilePath = options;
+
+            RedisSubscription subscription = new RedisSubscription();
         }
 
         public void Configuration(IAppBuilder app)

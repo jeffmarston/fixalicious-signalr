@@ -5,6 +5,7 @@ import { GridOptions } from 'ag-grid/main';
 import { TransactionApiService } from "../../services/transaction.service"
 import { SessionService } from "../../services/session.service"
 import { IFixMessage, ISession } from "../../types.d"
+import { ChannelService, ChannelEvent } from "../../services/channel.service"
 
 
 @Component({
@@ -27,12 +28,29 @@ export class SimpleGridComponent implements OnInit {
     private debugMessage: string;
 
     ngOnInit() {
+        // Get an observable for events emitted on this channel
+        this.channelService.sub("transaction").subscribe(
+            (x: ChannelEvent) => {
+                console.log(x);
+                switch (x.Name) {
+                    case "serviceInfo.status": {
+                        //this.updateDataSource(x.Data);
+                        console.log(x.Data[0].name + " - " + x.Data[0].status);
+                    }
+                }
+            },
+            (error: any) => {
+                console.warn("Attempt to join channel failed!", error);
+            }
+        );
+
         this.showGrid = true;
     }
 
     constructor(
         private apiDataService: TransactionApiService,
         private sessionService: SessionService,
+        private channelService: ChannelService,
         private http: Http) {
 
         this.createColumnDefs();

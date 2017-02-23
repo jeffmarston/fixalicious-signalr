@@ -160,6 +160,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignalR\Constants.cs" />
     <Compile Include="SignalR\EventHub.cs" />
+    <Compile Include="Transaction\RedisSubscription.cs" />
     <Compile Include="Transaction\TransactionController.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
