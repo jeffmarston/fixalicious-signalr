@@ -17,10 +17,8 @@ namespace Wask.Lib.Model
         public string name { get; set; }
     }
 
-    public class Transaction
+    public class FixMessage
     {
-        public string id { get; set; }
-        public string direction { get; set; }
         public string clOrdId { get; set; }
         public string symbol { get; set; }
         public int fillStatus { get; set; }
@@ -30,6 +28,13 @@ namespace Wask.Lib.Model
         public decimal avgPx { get; set; }
         public int leavesQty { get; set; }
         public int side { get; set; }
+    }
+
+    public class Transaction
+    {
+        public string id { get; set; }
+        public string direction { get; set; }
+        public string message { get; set; }
 
         public override string ToString()
         {

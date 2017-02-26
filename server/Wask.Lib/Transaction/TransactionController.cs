@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Wask.Lib.Model;
 using ServiceStack.Redis;
 using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace Wask.Lib.SignalR
 {
@@ -55,20 +57,24 @@ namespace Wask.Lib.SignalR
         [HttpPost]
         public IHttpActionResult Post(string session, string symbol)
         {
-            var returnMsg = "";
+            var message = new FixMessage();
+            message.clOrdId = Guid.NewGuid().ToString();
+            message.symbol = "UPS";
+            message.lastPx = 12.34m;
+            message.lastShares = 2000;
+            message.leavesQty = 0;
 
-            List<Transaction> messages = new List<Transaction>();
-            messages.AddRange(Get(session) ?? new List<Transaction>());
-            messages.Add(new Transaction() { direction="sent", symbol = symbol });
-            string json = JsonConvert.SerializeObject(messages);
+            SendRequest("localhost:9999", message);
+            
+            return Ok();
+        }
 
-            using (var redis = new RedisClient("localhost", 6379))
-            {
-                redis.SetValue(session, json);
-            }
-
-            Console.WriteLine(returnMsg);
-            return Ok(returnMsg);
+        private void SendRequest(string url, FixMessage msg)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(url);
+            HttpResponseMessage response = client.PostAsJsonAsync(url, msg).Result;
+            response.EnsureSuccessStatusCode();
         }
 
 
