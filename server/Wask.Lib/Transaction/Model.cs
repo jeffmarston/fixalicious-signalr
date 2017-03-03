@@ -32,13 +32,13 @@ namespace Wask.Lib.Model
 
     public class Transaction
     {
-        public string id { get; set; }
+        public int id { get; set; }
         public string direction { get; set; }
         public string message { get; set; }
 
         public override string ToString()
         {
-            return $"{symbol} - {clOrdId}";
+            return $"{id} - {direction}";
         }
     }
 

@@ -12,6 +12,11 @@ export interface IFixMessage {
     leavesQty?: number,
     side?: number
 }
+export interface ITransaction {
+    direction: string,
+    id: number,
+    message: string,
+}
 
 export interface ISession {
     name: string;

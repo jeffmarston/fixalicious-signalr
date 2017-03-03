@@ -59,7 +59,7 @@ import { ISession } from "../../types.d"
             height: 30px;
             padding-left: 10px;
             border: none;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .editable-input {

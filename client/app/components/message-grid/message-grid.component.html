@@ -1,24 +1,35 @@
 <div class="outer-div">
     <div class="main-content">
-        <session-config 
+        <!--<session-config 
             [session]="selectedSession"
-            (onSave)="saveSession($event)"></session-config>
+            (onSave)="saveSessionConfig($event)"></session-config>-->
 
         <div *ngIf="showGrid" style="height: 100%; display: flex;">
-            <ag-grid-angular #agGrid style="width: 100%; height: 100%;" class="ag-theme"
+
+            <!--<table style="height: 300px; background: pink; max-width: 200px; ">
+                <tr *ngFor="let row of rowData">
+                    <td>{{row.direction}}</td>
+                    <td>{{row.id}}</td>
+                    <td>{{row.message}}</td>
+                </tr>
+            </table>-->
+
+
+            <ag-grid-angular #agGrid style="width: 100%; height: 800px;" class="ag-theme"
                         [gridOptions]="gridOptions"                     
                         [rowData]="rowData"
                         enableColResize
                         enableSorting
                         enableFilter
                         rowSelection="multiple"
-                        (cellClicked)="onCellDoubleClicked($event)"
+                        (cellClicked)="onCellClicked($event)"
             >
             </ag-grid-angular>
             
         <detail-pane
             [collapsed]="showDetails"
             [detail]="selectedMessage"
+            [session]="selectedSession"
         ></detail-pane>
 
         </div>

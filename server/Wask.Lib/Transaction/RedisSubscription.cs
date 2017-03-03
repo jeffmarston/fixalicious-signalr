@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json.Linq;
 using ServiceStack.Redis;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Wask.Lib.Model;
 using Wask.Lib.SignalR;
 
 namespace Wask.Lib
@@ -38,11 +40,15 @@ namespace Wask.Lib
             Console.WriteLine("RedisSubscription Disposed");
         }
 
+        public static int GetNextId()
+        {
+            return idIncrement++;
+        }
+
+        private static int idIncrement = 0;
+
         private void ListenToRedis(object sender, DoWorkEventArgs e)
         {
-            //using (var redisConsumer = new RedisClient("localhost", 6379))
-            //using (var subscription = redisConsumer.CreateSubscription())
-            //{
             subscription.OnSubscribe = channel =>
             {
                 Console.WriteLine("Subscribed to '{0}'", channel);
@@ -55,18 +61,42 @@ namespace Wask.Lib
             {
                 Console.WriteLine("Received '{0}' from channel '{1}'", msg, channel);
 
-                _context.Clients.Group(Constants.TransactionChannel).OnEvent(Constants.TransactionChannel, new ChannelEvent
+                var jObj = ParseFixText(msg);
+                //if ((jObj.GetValue("MsgType (35)") as JValue).Value.ToString() == "D")
                 {
-                    ChannelName = Constants.TransactionChannel,
-                    Name = "BAX",
-                    Data = "---=== oooOOOooo ===---"
-                });
+                    Transaction tx = new Transaction();
+                    tx.direction = "Receieved";
+                    tx.id = GetNextId();
+                    tx.message = jObj.ToString();
+                    Console.WriteLine("JSON = " + tx.message);
 
-
+                    _context.Clients.Group(Constants.TransactionChannel).OnEvent(Constants.TransactionChannel, new ChannelEvent
+                    {
+                        ChannelName = Constants.TransactionChannel,
+                        Name = channel,
+                        Data = tx
+                    });
+                }
             };
 
-            subscription.SubscribeToChannels("refresh"); //blocking
+            subscription.SubscribeToChannels("BAXA"); //blocking
         }
-        //}
+
+        private JObject ParseFixText(string text)
+        {
+            var jObject = new JObject();
+
+            var lines = text.Split('\n');
+            foreach(var line in lines)
+            {
+                int colonIdx = line.IndexOf(":");
+                if (colonIdx > 0)
+                {
+                    jObject.Add(line.Substring(0, colonIdx).Trim(), line.Substring(colonIdx+1).Trim());
+                }
+            }
+
+            return jObject;
+        }
     }
 }

@@ -3,16 +3,26 @@ import { CommonModule } from "@angular/common";
 import { Http, Response } from "@angular/http";
 import { SessionService } from "../../services/session.service"
 import { TransactionApiService } from "../../services/transaction.service"
-import { ISession, IFixMessage } from "../../types.d"
+import { ISession, IFixMessage, ITransaction } from "../../types.d"
 
 @Component({
     selector: 'detail-pane',
     template: `
-    <div class="container" [style.width]="collapsed ? '0' : '220px'" > 
-        <button [disabled]="!isValid" (click)="ackFixMessage()">Ack</button>
-        <button [disabled]="!isValid" (click)="rejectFixMessage()">Reject</button>
-        <button [disabled]="!isValid">Fill</button>
-        <button [disabled]="!isValid">Partial Fill</button>
+    <div class="container" [style.width]="collapsed ? '0' : '280px'" > 
+        <div class="button-section">
+            <button [disabled]="!isValid" (click)="ackFixMessage()">Ack</button>
+            <button [disabled]="true">Reject</button>
+            <button [disabled]="true">Fill</button>
+            <button [disabled]="true">Partial Fill</button>
+        </div>
+        <div class="keyvalue-section">
+            <table class="keyvalue-table">
+                <tr *ngFor="let pair of kvPairs" >
+                    <td>{{pair.key}}</td>
+                    <td><input [(ngModel)]="pair.value"/></td>
+                </tr>
+            </table>
+        </div>
     </div>
     `,
     styles: [` 
@@ -23,6 +33,21 @@ import { ISession, IFixMessage } from "../../types.d"
             transition: width .25s ease;
             display: flex;
             flex-direction: column;
+        }
+
+        .button-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .keyvalue-section {
+            overflow: auto;
+            border-collapse: collapse;
+            margin-left: 6px;
+        }
+
+        .keyvalue-table {
+            font-size: 12px;
         }
 
         button { 
@@ -38,16 +63,18 @@ import { ISession, IFixMessage } from "../../types.d"
     providers: [SessionService]
 })
 export class DetailPane implements OnInit {
-    @Input() detail: IFixMessage;
+    @Input() detail: ITransaction;
     @Input() collapsed: boolean;
+    @Input() session: ISession;
 
-    private fixMessage: IFixMessage;
-    private fixMsgJson: string;
+    private transaction: ITransaction;
     private isValid: boolean;
+    private kvPairs: any[] = [];
 
     constructor(
         private clientsService: SessionService,
         private apiDataService: TransactionApiService) {
+                this.isValid = true;
     }    
 
     private ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -55,8 +82,8 @@ export class DetailPane implements OnInit {
             let changedProp = changes[propName];
 
             if (propName == "detail" && changedProp.currentValue != undefined) {
-                this.fixMessage = changedProp.currentValue;
-                this.fixMsgJson = JSON.stringify(this.fixMessage);
+                this.transaction = changedProp.currentValue;
+                this.displayFixMessage();
                 this.isValid = true;
             }
             if (propName == "collapsed" && changedProp.currentValue != undefined) {
@@ -65,12 +92,29 @@ export class DetailPane implements OnInit {
         }
     }
 
-    private ackFixMessage() {
-        this.apiDataService.createTransaction("BAX", "AAPL");
+    private displayFixMessage() {
+        this.kvPairs = [];
+        var fixMsg = JSON.parse(this.transaction.message);
+        for (var property in fixMsg) {
+            if (fixMsg.hasOwnProperty(property)) {
+                this.kvPairs.push({ 
+                    key: property, 
+                    value: fixMsg[property]});
+            }
+        }
     }
 
-    private rejectFixMessage() {
-        this.apiDataService.createTransaction("BAX2", "GOOG");
+    private ackFixMessage() {
+        var fixObj = {};
+
+        this.kvPairs.forEach(pair => {
+            fixObj[pair.key] = pair.value;
+        });
+
+        console.log(fixObj);
+        alert(JSON.stringify(fixObj));
+
+        this.apiDataService.createTransaction(this.session.name, fixObj);
     }
 
     ngOnInit() {

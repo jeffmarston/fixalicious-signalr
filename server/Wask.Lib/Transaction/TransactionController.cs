@@ -6,6 +6,8 @@ using ServiceStack.Redis;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace Wask.Lib.SignalR
 {
@@ -27,18 +29,23 @@ namespace Wask.Lib.SignalR
         [HttpGet]
         public IEnumerable<Transaction> Get(string session)
         {
-            string redisDoc;
+            byte[][] redisDocs;
             using (var redis = new RedisClient("localhost", 6379))
             {
-                redisDoc = redis.GetValue(session);
+                redisDocs = redis.LRange("session:"+session, 0, -1);
             }
-            if (redisDoc == null)
+            if (redisDocs == null)
             {
                 return null;
             }
 
-            List<Transaction> messages = JsonConvert.DeserializeObject<List<Transaction>>(redisDoc);
-            return messages;
+            List<Transaction> transactions = new List<Transaction>();
+            foreach(var doc in redisDocs)
+            {
+                string str = Encoding.ASCII.GetString(doc);
+                transactions.Add(JsonConvert.DeserializeObject<Transaction>(str));
+            }
+            return transactions;
         }
 
 
@@ -55,25 +62,55 @@ namespace Wask.Lib.SignalR
         /// <response code="500">Returns if the action was unsuccessful</response>
         [Route("{session}")]
         [HttpPost]
-        public IHttpActionResult Post(string session, string symbol)
+        public IHttpActionResult Post(string session, [FromBody] JObject payload)
         {
+            Console.WriteLine("####################");
+            Console.WriteLine(payload);
+            Console.WriteLine("####################");
+            
+
             var message = new FixMessage();
-            message.clOrdId = Guid.NewGuid().ToString();
-            message.symbol = "UPS";
-            message.lastPx = 12.34m;
+
+            message.clOrdId = getFromPayload(payload, "ClOrdID (11)");
+            message.symbol = getFromPayload(payload, "Symbol (55)");
+            message.lastPx = Convert.ToDecimal(getFromPayload(payload, "Price (44)"));
+            
             message.lastShares = 2000;
             message.leavesQty = 0;
 
-            SendRequest("localhost:9999", message);
-            
+            try
+            {
+                SendRequest("http://localhost:9999/"+session, message);
+
+                //Fake - Fixalicious should do this
+                Transaction tx = new Transaction();
+                tx.direction = "sent";
+                tx.id = RedisSubscription.GetNextId();
+                tx.message = JsonConvert.SerializeObject(message, Formatting.None);
+
+                using (var redis = new RedisClient("localhost", 6379))
+                {
+                    string json = JsonConvert.SerializeObject(tx, Formatting.None);
+                    redis.RPush("session:" + session, Encoding.ASCII.GetBytes(json));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
             return Ok();
         }
+        
+        private string getFromPayload(JObject payload, string key)
+        {
+            return (payload.GetValue(key) as JValue).Value.ToString();
+        }
 
-        private void SendRequest(string url, FixMessage msg)
+        private void SendRequest(string url, object fixMsg)
         {
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(url);
-            HttpResponseMessage response = client.PostAsJsonAsync(url, msg).Result;
+            HttpResponseMessage response = client.PostAsJsonAsync(url, fixMsg).Result;
             response.EnsureSuccessStatusCode();
         }
 
@@ -87,7 +124,7 @@ namespace Wask.Lib.SignalR
         {
             using (var redis = new RedisClient("localhost", 6379))
             {
-                redis.Remove(session);
+                redis.Remove("session:" + session);
             }
             return Ok();
         }
